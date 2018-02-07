@@ -1,0 +1,423 @@
+ course on faculty.facid=course.fid where faculty.facid=(select fid from course where crtitle='database systems');
++---------+----------+------------------+
+| facname | rank     | crtitle          |
++---------+----------+------------------+
+| usman   | lecturer | database systems |
++---------+----------+------------------+
+1 row in set (0.00 sec)
+
+mysql> select stid,stname from student where stid in (select stid from book group by stid having count(*)>1);
++------+-----------+
+| stid | stname    |
++------+-----------+
+| s101 | ali tahir |
+| s104 | farah naz |
++------+-----------+
+2 rows in set (0.00 sec)
+
+mysql> select stid,stname from student where stid not in (select stid from book group by stid having count(*)>=1);
+Empty set (0.00 sec)
+
+mysql> select stid,stname from student where stid not in (select stid from book group by stid having count(*)!=0);
+Empty set (0.00 sec)
+
+mysql> select stid,stname from student where stid in (select stid from book group by stid having count(*)=0);
+Empty set (0.00 sec)
+
+mysql> select stid,stname from student where stid in (select stid from book group by stid having count(*)<1);
+Empty set (0.00 sec)
+
+mysql> select student.stid,student.stname from student right join book on student.stid=book.stid where student.stid=null;
+Empty set (0.00 sec)
+
+mysql> select student.stid,student.stname from student right join book on student.stid=book.stid where book.stid=null;
+Empty set (0.00 sec)
+
+mysql> select student.stid,student.stname from student left join book on student.stid=book.stid where book.stid=null;
+Empty set (0.00 sec)
+
+mysql> select student.stid,student.stname from student left join book on student.stid=book.stid where student.stid=null;
+Empty set (0.00 sec)
+
+mysql> select student.stid,student.stname from student outer join book on student.stid=book.stid where student.stid=null;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'outer join book on student.stid=book.stid where student.stid=null' at line 1
+mysql> select student.stid,student.stname from student where stid not in (select stid from book );
+Empty set (0.00 sec)
+
+mysql> select * from book;
++--------+----------------------------------+------+
+| bkid   | bktitle                          | stid |
++--------+----------------------------------+------+
+| b10001 | introduction to database systems | s104 |
+| b10002 | programming fundamentals         | s101 |
+| b10003 | introduction to data structures  | s101 |
+| b10004 | modern operating systems         | s103 |
+| b10005 | computer architecture            | NULL |
+| b10006 | advanced network                 | s104 |
++--------+----------------------------------+------+
+6 rows in set (0.00 sec)
+
+mysql> select * from student;
++------+-------------+
+| stid | stname      |
++------+-------------+
+| s101 | ali tahir   |
+| s103 | farah hasan |
+| s104 | farah naz   |
+| s106 | asmat dar   |
+| s107 | liaquat ali |
++------+-------------+
+5 rows in set (0.00 sec)
+
+mysql>  (select stid from book );+------+
+| stid |
++------+
+| s104 |
+| s101 |
+| s101 |
+| s103 |
+| NULL |
+| s104 |
++------+
+6 rows in set (0.00 sec)
+
+mysql> select stid,stname from student where stid not in (select stid from book );
+Empty set (0.00 sec)
+
+mysql> select stid,stname from student where stid not exists (select stid from book );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'exists (select stid from book )' at line 1
+mysql> select student.stid,student.stname from student right join book on student.stid=book.stid;
++------+-------------+
+| stid | stname      |
++------+-------------+
+| s104 | farah naz   |
+| s101 | ali tahir   |
+| s101 | ali tahir   |
+| s103 | farah hasan |
+| NULL | NULL        |
+| s104 | farah naz   |
++------+-------------+
+6 rows in set (0.00 sec)
+
+mysql> select student.stid,student.stname from student inner join book on student.stid=book.stid;
++------+-------------+
+| stid | stname      |
++------+-------------+
+| s104 | farah naz   |
+| s101 | ali tahir   |
+| s101 | ali tahir   |
+| s103 | farah hasan |
+| s104 | farah naz   |
++------+-------------+
+5 rows in set (0.00 sec)
+
+mysql> select student.stid,student.stname from student outer join book on student.stid=book.stid;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'outer join book on student.stid=book.stid' at line 1
+mysql> select student.stid,student.stname from student outer join book where student.stid=book.stid;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'outer join book where student.stid=book.stid' at line 1
+mysql> select student.stid,student.stname from student full outer join book where student.stid=book.stid;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'outer join book where student.stid=book.stid' at line 1
+mysql> select student.stid,student.stname from student full outer join book where student.stid=null;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'outer join book where student.stid=null' at line 1
+mysql> select student.name from student right join book on student.stid=book.stid where stid=(select stid from book where bktitle='computer architecture');
+ERROR 1054 (42S22): Unknown column 'student.name' in 'field list'
+mysql> select student.stname from student right join book on student.stid=book.stid where stid=(select stid from book where bktitle='computer architecture');
+ERROR 1052 (23000): Column 'stid' in where clause is ambiguous
+mysql> select student.stname from student right join book on student.stid=book.stid where student.stid=(select stid from book where bktitle='computer architecture');
+Empty set (0.00 sec)
+
+mysql> select book.bktitle from book right join student on book.stid=student.stid where student.stid=(select stid from student where stname='farah naz');
++----------------------------------+
+| bktitle                          |
++----------------------------------+
+| introduction to database systems |
+| advanced network                 |
++----------------------------------+
+2 rows in set (0.00 sec)
+
+mysql> select student.stname from student right join book on student.stid=book.stid;
++-------------+
+| stname      |
++-------------+
+| farah naz   |
+| ali tahir   |
+| ali tahir   |
+| farah hasan |
+| NULL        |
+| farah naz   |
++-------------+
+6 rows in set (0.00 sec)
+
+mysql> select stid,stname from student where stid not in (select stid from student inner join book on student.stid=book.stid);
+ERROR 1052 (23000): Column 'stid' in field list is ambiguous
+mysql> select stid,stname from student where stid not in (select student.stid from student inner join book on student.stid=book.stid);
++------+-------------+
+| stid | stname      |
++------+-------------+
+| s106 | asmat dar   |
+| s107 | liaquat ali |
++------+-------------+
+2 rows in set (0.00 sec)
+
+mysql> create table student(roll varchar(10),name varchar(20),percent varchar(3),dept_name varchar(20),gender varchar(6),class_cr varchar(20));
+ERROR 1050 (42S01): Table 'student' already exists
+mysql> create table student_(roll varchar(10),name varchar(20),percent varchar(3),dept_name varchar(20),gender varchar(6),class_cr varchar(20));
+Query OK, 0 rows affected (0.10 sec)
+
+mysql> insert into student_ values('100','sunita','89','cse','female','aditi');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> insert into student_ values('101','kavita','45','cse','female','aditi');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> insert into student_ values('101','aditi','99','cse','female','aditi');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> delete from student_ where name='aditi';
+Query OK, 1 row affected (0.06 sec)
+
+mysql> insert into student_ values('102','aditi','99','cse','female','aditi');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> insert into student_ values('102','anil','34','cse','male','aditi');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> delete from student_ where name='anil';
+Query OK, 1 row affected (0.06 sec)
+
+mysql> insert into student_ values('103','anil','34','cse','male','aditi');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into student_ values('104','abc','74','cse','male','aditi');
+Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into student_ values('201','mukesh','84','ece','male','hardik');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> insert into student_ values('202','hardik','95','ece','male','hardik');Query OK, 1 row affected (0.04 sec)
+
+mysql> insert into student_ values('203','daya','67','ece','female','hardik');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into student_ values('204','mac','69','ece','male','hardik');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> select name,percent from student_ where percent=(select max(percent) from student_);
++-------+---------+
+| name  | percent |
++-------+---------+
+| aditi | 99      |
++-------+---------+
+1 row in set (0.00 sec)
+
+mysql> select name,percent from student_ where percent=(select max(percent) from student_ where percent<(select max(percent) from student_));
++--------+---------+
+| name   | percent |
++--------+---------+
+| hardik | 95      |
++--------+---------+
+1 row in set (0.00 sec)
+
+mysql> select name from student_ where percent=(select max(percent) from student_);
++-------+
+| name  |
++-------+
+| aditi |
++-------+
+1 row in set (0.01 sec)
+
+mysql> select name from student_ where percent=(select min(percent) from student_);
++------+
+| name |
++------+
+| anil |
++------+
+1 row in set (0.01 sec)
+
+mysql> select department from student_ where (select avg(percent) from student_  group by gender having gender='male')>(select avg(percent) from student_ group by gender having gender='female');
+ERROR 1054 (42S22): Unknown column 'department' in 'field list'
+mysql> select dept_name from student_ where (select avg(percent) from student_  group by gender having gender='male')>(select avg(percent) from student_ group by gender having gender='female');
+Empty set (0.00 sec)
+
+mysql> insert into student_ values ('301','hansa','56','eee','female','fgh');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into student_ values ('302','sheldon','98','eee','male','fgh');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into student_ values ('303','leonard','95','eee','male','fgh');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into student_ values ('304','amy','55','eee','female','fgh');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> select department from student_ where (select avg(percent) from student_  group by gender having gender='male')>(select avg(percent) from student_ group by gender having gender='female');
+ERROR 1054 (42S22): Unknown column 'department' in 'field list'
+mysql> select dept_name from student_ where (select avg(percent) from student_  group by gender having gender='male')>(select avg(percent) from student_ group by gender having gender='female');
++-----------+
+| dept_name |
++-----------+
+| cse       |
+| cse       |
+| cse       |
+| cse       |
+| cse       |
+| ece       |
+| ece       |
+| ece       |
+| ece       |
+| eee       |
+| eee       |
+| eee       |
+| eee       |
++-----------+
+13 rows in set (0.00 sec)
+
+mysql> (select avg(percent) from student_ group by gender having gender='female');+--------------+
+| avg(percent) |
++--------------+
+|         68.5 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> select dept_name from student_ where (select avg(percent) from student_  group by gender having gender='male')>(select avg(percent) from student_ group by gender having gender='female');
++-----------+
+| dept_name |
++-----------+
+| cse       |
+| cse       |
+| cse       |
+| cse       |
+| cse       |
+| ece       |
+| ece       |
+| ece       |
+| ece       |
+| eee       |
+| eee       |
+| eee       |
+| eee       |
++-----------+
+13 rows in set (0.00 sec)
+
+mysql> select dept_name from student_ where (select avg(percent) from student_  group by gender,dept_name having gender='male')>(select avg(percent) from student_ group by gender having gender='female');
+ERROR 1242 (21000): Subquery returns more than 1 row
+mysql> select dept_name from student_ where (select avg(percent) from student_  group by gender,dept_name having gender='male')>percent in(select avg(percent) from student_ group by gender having gender='female');
+ERROR 1242 (21000): Subquery returns more than 1 row
+mysql> select dept_name from student_ where (select avg(percent) from student_ group by gender having gender='female')<)(select avg(percent) from student_ group by gender,dept_name having gender='male');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')(select avg(percent) from student_ group by gender,dept_name having gender='mal' at line 1
+mysql> select dept_name from student_ where (select avg(percent) from student_ where gender='male' group by dept_name)>(select avg(percent) from student_ where gender='female');
+ERROR 1242 (21000): Subquery returns more than 1 row
+mysql> select dept_name from student_ where (select avg(percent) from student_ where gender='male' group by dept_name)>(select avg(percent) from student_ where gender='female' group by dept_name);
+ERROR 1242 (21000): Subquery returns more than 1 row
+mysql> select class_cr from student_;
++----------+
+| class_cr |
++----------+
+| aditi    |
+| aditi    |
+| aditi    |
+| aditi    |
+| aditi    |
+| hardik   |
+| hardik   |
+| hardik   |
+| hardik   |
+| fgh      |
+| fgh      |
+| fgh      |
+| fgh      |
++----------+
+13 rows in set (0.01 sec)
+
+mysql> select class_cr from student_ group by class_cr;
++----------+
+| class_cr |
++----------+
+| aditi    |
+| fgh      |
+| hardik   |
++----------+
+3 rows in set (0.01 sec)
+
+mysql> select dept_name from student_ where (select avg(percent) from student_ where gender='female')<(select avg(percent) from student_ where gender='male' group by dept_name);
+ERROR 1242 (21000): Subquery returns more than 1 row
+mysql> select dept_name from student_ where percent in( (select avg(percent) from student_ where gender='male' group by dept_name))>(select avg(percent) from student_ where gender='female' group by dept_name);
+ERROR 1242 (21000): Subquery returns more than 1 row
+mysql> select * from student_ where percent=(select max(percent) from student_ group by dept_name);
+ERROR 1242 (21000): Subquery returns more than 1 row
+mysql> select * from student_ where percent in(select max(percent) from student_ group by dept_name);
++------+---------+---------+-----------+--------+----------+
+| roll | name    | percent | dept_name | gender | class_cr |
++------+---------+---------+-----------+--------+----------+
+| 102  | aditi   | 99      | cse       | female | aditi    |
+| 202  | hardik  | 95      | ece       | male   | hardik   |
+| 302  | sheldon | 98      | eee       | male   | fgh      |
+| 303  | leonard | 95      | eee       | male   | fgh      |
++------+---------+---------+-----------+--------+----------+
+4 rows in set (0.00 sec)
+
+mysql> select * from student_ where percent in(select percent from student_ group by dept_name);
++------+--------+---------+-----------+--------+----------+
+| roll | name   | percent | dept_name | gender | class_cr |
++------+--------+---------+-----------+--------+----------+
+| 100  | sunita | 89      | cse       | female | aditi    |
+| 201  | mukesh | 84      | ece       | male   | hardik   |
+| 301  | hansa  | 56      | eee       | female | fgh      |
++------+--------+---------+-----------+--------+----------+
+3 rows in set (0.00 sec)
+
+mysql> select * from student_ where percent=(select max(percent) from student_ where percent in(select percent from student_ group by dept_name));
++------+--------+---------+-----------+--------+----------+
+| roll | name   | percent | dept_name | gender | class_cr |
++------+--------+---------+-----------+--------+----------+
+| 100  | sunita | 89      | cse       | female | aditi    |
++------+--------+---------+-----------+--------+----------+
+1 row in set (0.00 sec)
+
+mysql> select * from student_ where percent=(select max(percent) from student_ where percent in(select percent from student_ group by dept_name having max(percent)));
++------+--------+---------+-----------+--------+----------+
+| roll | name   | percent | dept_name | gender | class_cr |
++------+--------+---------+-----------+--------+----------+
+| 100  | sunita | 89      | cse       | female | aditi    |
++------+--------+---------+-----------+--------+----------+
+1 row in set (0.00 sec)
+
+mysql> select * from student_ where gender='male' group by dept_name having avg(percent)>(select avg(percent) from student_ where gender='female');
++------+---------+---------+-----------+--------+----------+
+| roll | name    | percent | dept_name | gender | class_cr |
++------+---------+---------+-----------+--------+----------+
+| 201  | mukesh  | 84      | ece       | male   | hardik   |
+| 302  | sheldon | 98      | eee       | male   | fgh      |
++------+---------+---------+-----------+--------+----------+
+2 rows in set (0.00 sec)
+
+mysql> select dept_name from student_ where gender='male' group by dept_name having avg(percent)>(select avg(percent) from student_ where gender='female');
++-----------+
+| dept_name |
++-----------+
+| ece       |
+| eee       |
++-----------+
+2 rows in set (0.00 sec)
+
+mysql> select * from student_;
++------+---------+---------+-----------+--------+----------+
+| roll | name    | percent | dept_name | gender | class_cr |
++------+---------+---------+-----------+--------+----------+
+| 100  | sunita  | 89      | cse       | female | aditi    |
+| 101  | kavita  | 45      | cse       | female | aditi    |
+| 102  | aditi   | 99      | cse       | female | aditi    |
+| 103  | anil    | 34      | cse       | male   | aditi    |
+| 104  | abc     | 74      | cse       | male   | aditi    |
+| 201  | mukesh  | 84      | ece       | male   | hardik   |
+| 202  | hardik  | 95      | ece       | male   | hardik   |
+| 203  | daya    | 67      | ece       | female | hardik   |
+| 204  | mac     | 69      | ece       | male   | hardik   |
+| 301  | hansa   | 56      | eee       | female | fgh      |
+| 302  | sheldon | 98      | eee       | male   | fgh      |
+| 303  | leonard | 95      | eee       | male   | fgh      |
+| 304  | amy     | 55      | eee       | female | fgh      |
++------+---------+---------+-----------+--------+----------+
+13 rows in set (0.00 sec)
+
